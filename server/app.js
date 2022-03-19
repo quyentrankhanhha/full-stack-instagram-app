@@ -1,19 +1,17 @@
-const express = require('express')
-const { default: mongoose } = require('mongoose')
-const app = express()
 require('dotenv').config()
+const express = require('express')
+const app = express()
+const cors = require('cors')
+
+// database connection
 require('./database/mongoose')
 
+// middlewares
 app.use(express.json())
+app.use(cors())
 
 const PORT = process.env.PORT || 8000
 const User = require('./model/user')
-
-// const user = new User({
-//   username: 'hahahihi',
-//   email: 'quyentrankhanhha@gmail.com',
-//   password: '123456',
-// })
 
 app.post('/user/register', async (req, res) => {
   try {
