@@ -2,7 +2,7 @@ const router = require('express').Router()
 const { User, validate } = require('../model/user')
 const bcrypt = require('bcrypt')
 
-router.post('/', async (req, res) => {
+router.post('/register', async (req, res) => {
   try {
     const { error } = validate(req.body)
     if (error) return res.status(400).send({ message: error.detail[0].message })

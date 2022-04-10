@@ -2,6 +2,12 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 const cors = require('cors')
+const multer = require('multer')
+const upload = multer({ dest: 'uploads/' })
+
+// routes
+const registerRoute = require('./routes/register')
+const loginRoute = require('./routes/login')
 
 // database connection
 require('./database/mongoose')
@@ -13,20 +19,9 @@ app.use(cors())
 const PORT = process.env.PORT || 8000
 const User = require('./model/user')
 
-app.post('/user/register', async (req, res) => {
-  try {
-    console.log('req.body: ', req.body)
-    const user = new User({
-      username: req.body.username,
-      email: req.body.email,
-      password: req.body.password,
-    })
-    await User.create(user)
-    res.send('custer added')
-  } catch (err) {
-    console.log('err:', err)
-  }
-})
+// routes
+app.use('/register', registerRoute)
+app.use('/login', loginRoute)
 
 app.listen(PORT, () => {
   console.log(`Server is listening to ${PORT}`)

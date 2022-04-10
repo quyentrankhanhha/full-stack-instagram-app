@@ -9,6 +9,5 @@ mongoose
     },
     6000000
   )
-
   .then(console.log('connected to server'))
   .catch((err) => console.log(err))
