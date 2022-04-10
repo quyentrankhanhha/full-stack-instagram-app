@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true,
-    minlength: 6,
+    minlength: 3,
   },
 })
 
@@ -33,7 +33,7 @@ userSchema.methods.generateAuthToken = function () {
 
 const User = mongoose.model('user', userSchema)
 
-const validate = (data) => {
+const validateRegister = (data) => {
   const schema = Joi.object({
     username: Joi.string().required().label('username'),
     email: Joi.string().email().required().label('email'),
@@ -42,4 +42,12 @@ const validate = (data) => {
   return schema.validate(data)
 }
 
-module.exports = { User, validate }
+const validateLogin = (data) => {
+  const schema = Joi.object({
+    email: Joi.string().email().required().label('email'),
+    password: passwordComplexity().required().label('password'),
+  })
+  return schema.validate(data)
+}
+
+module.exports = { User, validateRegister, validateLogin }
