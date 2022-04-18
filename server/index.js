@@ -2,12 +2,10 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const multer = require('multer')
-const upload = multer({ dest: 'uploads/' })
 
 // routes
-const registerRoute = require('./routes/register')
-const loginRoute = require('./routes/login')
+const authRoute = require('./routes/auth')
+const picRoute = require('./routes/pic')
 
 // database connection
 require('./database/mongoose')
@@ -18,10 +16,11 @@ app.use(cors())
 
 const PORT = process.env.PORT || 8000
 const User = require('./model/user')
+const Post = require('./model/pic')
 
 // routes
-app.use('/register', registerRoute)
-app.use('/login', loginRoute)
+app.use('/', authRoute)
+app.use('/pic', picRoute)
 
 app.listen(PORT, () => {
   console.log(`Server is listening to ${PORT}`)
