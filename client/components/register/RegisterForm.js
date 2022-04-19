@@ -99,7 +99,7 @@ const RegisterForm = ({ navigation }) => {
 
             <Pressable
               titleSize={20}
-              style={styles.button(isValid)}
+              style={customButton(isValid)}
               onPress={handleSubmit}
               disabled={!isValid}
             >
@@ -134,14 +134,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
 
-  button: (isValid) => ({
-    backgroundColor: isValid ? '#0096F6' : '#9ACAF7',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 42,
-    borderRadius: 4,
-  }),
-
   buttonText: {
     fontWeight: '600',
     color: '#fff',
@@ -154,4 +146,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 50,
   },
+})
+
+const customButton = (isValid) => ({
+  backgroundColor: isValid ? '#0096F6' : '#9ACAF7',
+  alignItems: 'center',
+  justifyContent: 'center',
+  minHeight: 42,
+  borderRadius: 4,
 })

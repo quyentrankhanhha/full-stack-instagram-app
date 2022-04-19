@@ -11,9 +11,9 @@ const BottomTabs = ({ icons }) => {
         source={{ uri: activeTab === icon.name ? icon.active : icon.inactive }}
         style={[
           styles.icon,
-          icon.name === 'Profile' ? styles.profilePic() : null,
+          icon.name === 'Profile' ? profilePic(activeTab) : null,
           activeTab === 'Profile' && icon.name === activeTab
-            ? styles.profilePic(activeTab)
+            ? profilePic(activeTab)
             : null,
         ]}
       />
@@ -78,12 +78,14 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
   },
+})
 
-  profilePic: (activeTab = '') => ({
+const profilePic = (activeTab) => {
+  return {
     borderRadius: 50,
     borderWidth: activeTab === 'Profile' ? 2 : 0,
     borderColor: '#fff',
-  }),
-})
+  }
+}
 
 export default BottomTabs
