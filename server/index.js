@@ -19,8 +19,8 @@ const User = require('./model/user')
 const Post = require('./model/pic')
 
 // routes
-app.use('/', authRoute)
-app.use('/pic', picRoute)
+app.use('/api/', authRoute)
+app.use('/api/pic', picRoute)
 
 app.listen(PORT, () => {
   console.log(`Server is listening to ${PORT}`)

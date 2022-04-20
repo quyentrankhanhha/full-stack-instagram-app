@@ -1,7 +1,8 @@
-import Validator from 'email-validator'
+import axios from 'axios'
 import { Formik } from 'formik'
 import React from 'react'
 import {
+  Alert,
   Pressable,
   StyleSheet,
   Text,
@@ -10,37 +11,67 @@ import {
   View,
 } from 'react-native'
 import * as yup from 'yup'
+import { loginApi } from '../../api/index'
+import { useAuth } from '../../context/AuthProvider'
 
 const LoginForm = ({ navigation }) => {
+  const { setIsLoggedIn, setProfile } = useAuth()
+
   const LoginSchema = yup.object().shape({
     email: yup.string().email().required('An email is required'),
     password: yup
       .string()
       .required()
-      .min(8, 'Your password has to have at least 8 characters'),
+      .min(8, 'Your password has to have at least 8 characters')
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
+        'Your password has to have at least 1 uppercase, 1 lowercase, 1 number and 1 special case character'
+      ),
   })
+
+  const handleOnSubmit = (values) => {
+    axios({
+      method: 'POST',
+      url: loginApi,
+      data: values,
+    })
+      .then((res) => {
+        setIsLoggedIn(true)
+        setProfile(res.data.user)
+        navigation.push('HomeScreen')
+      })
+      .catch((err) => {
+        if (err.response) {
+          Alert.alert('Error', err.response.data.message, [{ text: 'OK' }], {
+            cancelable: true,
+          })
+        }
+        return err
+      })
+  }
+
   return (
     <View style={styles.wrapper}>
       <Formik
         initialValues={{ email: '', password: '' }}
-        onSubmit={(values) => {
-          console.log(values)
-        }}
+        onSubmit={handleOnSubmit}
         validationSchema={LoginSchema}
         validateOnMount={true}
       >
-        {({ handleChange, handleBlur, handleSubmit, values, isValid }) => (
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          values,
+          isValid,
+          errors,
+          touched,
+        }) => (
           <>
             <View
               style={[
                 styles.inputField,
-                {
-                  borderColor:
-                    values.email.length < 1 ||
-                    Validator.validate(values.email) >= 6
-                      ? '#ccc'
-                      : 'red',
-                },
+                { borderColor: validationColor(touched.email, errors.email) },
               ]}
             >
               <TextInput
@@ -53,9 +84,27 @@ const LoginForm = ({ navigation }) => {
                 onChangeText={handleChange('email')}
                 onBlur={handleBlur('email')}
                 value={values.email}
+                error={errors.email}
+                touched={touched.email}
               />
             </View>
-            <View style={styles.inputField}>
+            {errors.email && touched.email && (
+              <View>
+                <Text style={styles.errorText}>{errors.email}</Text>
+              </View>
+            )}
+
+            <View
+              style={[
+                styles.inputField,
+                {
+                  borderColor: validationColor(
+                    touched.password,
+                    errors.password
+                  ),
+                },
+              ]}
+            >
               <TextInput
                 placeholder='Password'
                 placeholderTextColor='#444'
@@ -66,8 +115,15 @@ const LoginForm = ({ navigation }) => {
                 onChangeText={handleChange('password')}
                 onBlur={handleBlur('password')}
                 value={values.password}
+                error={errors.password}
+                touched={touched.password}
               />
             </View>
+            {errors.password && touched.password && (
+              <View>
+                <Text style={styles.errorText}>{errors.password}</Text>
+              </View>
+            )}
             <View style={{ alignItems: 'flex-end', marginBottom: 30 }}>
               <Text style={{ color: '#6BB0F5' }}>Forgot password?</Text>
             </View>
@@ -107,8 +163,15 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     padding: 12,
     backgroundColor: '#FAFAFAFA',
-    marginBottom: 10,
     borderWidth: 1,
+    marginBottom: 6,
+  },
+
+  errorText: {
+    fontSize: 10,
+    color: 'red',
+    padding: 6,
+    marginBottom: 10,
   },
 
   buttonText: {
@@ -132,3 +195,6 @@ const customButton = (isValid) => ({
   minHeight: 42,
   borderRadius: 4,
 })
+
+const validationColor = (touched, error) =>
+  !touched ? '#223e4b' : error ? '#FF5A5F' : '#223e4b'

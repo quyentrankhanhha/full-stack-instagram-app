@@ -34,7 +34,11 @@ router.get('/:postId', (req, res) => {
     .then((post) => {
       res.json({ post })
     })
-    .catch((err) => console.log(err))
+    .catch((err) =>
+      res.status(404).json({
+        message: err,
+      })
+    )
 })
 
 router.post('/', upload.single('photo'), requireLogin, (req, res) => {
@@ -107,10 +111,10 @@ router.delete('/', requireLogin, (req, res) => {
         post
           .remove()
           .then((res) => {
-            return res.json({ message: `${err}` })
+            return res.status(204).json({ message: res })
           })
           .catch((err) => {
-            console.log(err)
+            return res.status(404).json({ message: err })
           })
       }
     })
