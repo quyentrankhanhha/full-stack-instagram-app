@@ -1,7 +1,8 @@
-import Validator from 'email-validator'
+import axios from 'axios'
 import { Formik } from 'formik'
 import React from 'react'
 import {
+  Alert,
   Pressable,
   StyleSheet,
   Text,
@@ -10,6 +11,7 @@ import {
   View,
 } from 'react-native'
 import * as yup from 'yup'
+import { registerApi } from '../../api'
 
 const RegisterForm = ({ navigation }) => {
   const RegisterSchema = yup.object().shape({
@@ -18,31 +20,61 @@ const RegisterForm = ({ navigation }) => {
     password: yup
       .string()
       .required()
-      .min(8, 'Your password has to have at least 8 characters'),
+      .min(8, 'Your password has to have at least 8 characters')
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+        'Your password has to have at least 1 uppercase, 1 lowercase, 1 number and 1 special case character'
+      ),
   })
+
+  const handleOnRegister = (values) => {
+    axios({
+      method: 'POST',
+      url: registerApi,
+      data: values,
+    })
+      .then((res) => {
+        Alert.alert(
+          'Congrats',
+          'You have successfully registered!',
+          [{ text: 'OK', onPress: () => navigation.push('LoginScreen') }],
+          {
+            cancelable: true,
+          }
+        )
+      })
+      .catch((err) => {
+        if (err.response) {
+          Alert.alert('Error', err.response.data.message, [{ text: 'OK' }], {
+            cancelable: true,
+          })
+        }
+        return err
+      })
+  }
 
   return (
     <View style={styles.wrapper}>
       <Formik
         initialValues={{ email: '', username: '', password: '' }}
-        onSubmit={(values) => {
-          console.log(values)
-        }}
+        onSubmit={handleOnRegister}
         validationSchema={RegisterSchema}
         validateOnMount={true}
       >
-        {({ handleChange, handleBlur, handleSubmit, values, isValid }) => (
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          values,
+          isValid,
+          errors,
+          touched,
+        }) => (
           <>
             <View
               style={[
                 styles.inputField,
-                {
-                  borderColor:
-                    values.email.length < 1 ||
-                    Validator.validate(values.email) >= 6
-                      ? '#ccc'
-                      : 'red',
-                },
+                { borderColor: validationColor(touched.email, errors.email) },
               ]}
             >
               <TextInput
@@ -57,15 +89,19 @@ const RegisterForm = ({ navigation }) => {
                 value={values.email}
               />
             </View>
+            {errors.email && touched.email && (
+              <View>
+                <Text style={styles.errorText}>{errors.email}</Text>
+              </View>
+            )}
             <View
               style={[
                 styles.inputField,
                 {
-                  borderColor:
-                    values.email.length < 1 ||
-                    Validator.validate(values.email) >= 6
-                      ? '#ccc'
-                      : 'red',
+                  borderColor: validationColor(
+                    touched.username,
+                    errors.username
+                  ),
                 },
               ]}
             >
@@ -80,7 +116,17 @@ const RegisterForm = ({ navigation }) => {
                 value={values.username}
               />
             </View>
-            <View style={styles.inputField}>
+            <View
+              style={[
+                styles.inputField,
+                {
+                  borderColor: validationColor(
+                    touched.password,
+                    errors.password
+                  ),
+                },
+              ]}
+            >
               <TextInput
                 placeholder='Password'
                 placeholderTextColor='#444'
@@ -93,6 +139,13 @@ const RegisterForm = ({ navigation }) => {
                 value={values.password}
               />
             </View>
+
+            {errors.password && touched.password && (
+              <View>
+                <Text style={styles.errorText}>{errors.password}</Text>
+              </View>
+            )}
+
             <View style={{ alignItems: 'flex-end', marginBottom: 30 }}>
               <Text style={{ color: '#6BB0F5' }}>Forgot password?</Text>
             </View>
@@ -130,8 +183,15 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     padding: 12,
     backgroundColor: '#FAFAFAFA',
-    marginBottom: 10,
     borderWidth: 1,
+    marginBottom: 6,
+  },
+
+  errorText: {
+    fontSize: 10,
+    color: 'red',
+    padding: 6,
+    marginBottom: 10,
   },
 
   buttonText: {
@@ -155,3 +215,6 @@ const customButton = (isValid) => ({
   minHeight: 42,
   borderRadius: 4,
 })
+
+const validationColor = (touched, error) =>
+  !touched ? '#223e4b' : error ? '#FF5A5F' : '#223e4b'

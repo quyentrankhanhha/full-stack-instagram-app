@@ -24,12 +24,12 @@ const LoginForm = ({ navigation }) => {
       .required()
       .min(8, 'Your password has to have at least 8 characters')
       .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
         'Your password has to have at least 1 uppercase, 1 lowercase, 1 number and 1 special case character'
       ),
   })
 
-  const handleOnSubmit = (values) => {
+  const handleOnLogin = (values) => {
     axios({
       method: 'POST',
       url: loginApi,
@@ -54,7 +54,7 @@ const LoginForm = ({ navigation }) => {
     <View style={styles.wrapper}>
       <Formik
         initialValues={{ email: '', password: '' }}
-        onSubmit={handleOnSubmit}
+        onSubmit={handleOnLogin}
         validationSchema={LoginSchema}
         validateOnMount={true}
       >
@@ -88,6 +88,7 @@ const LoginForm = ({ navigation }) => {
                 touched={touched.email}
               />
             </View>
+
             {errors.email && touched.email && (
               <View>
                 <Text style={styles.errorText}>{errors.email}</Text>
@@ -119,11 +120,13 @@ const LoginForm = ({ navigation }) => {
                 touched={touched.password}
               />
             </View>
+
             {errors.password && touched.password && (
               <View>
                 <Text style={styles.errorText}>{errors.password}</Text>
               </View>
             )}
+
             <View style={{ alignItems: 'flex-end', marginBottom: 30 }}>
               <Text style={{ color: '#6BB0F5' }}>Forgot password?</Text>
             </View>
