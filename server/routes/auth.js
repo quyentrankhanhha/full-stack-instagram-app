@@ -23,7 +23,6 @@ router.post('/login', async (req, res) => {
 
     const token = user.generateAuthToken()
     const { _id, name, email, pic, username } = user
-    res.cookie('nToken', token, { maxAge: 900000, httpOnly: true })
     res.status(201).send({
       token: token,
       user: { _id, name, email, pic, username },
@@ -32,11 +31,6 @@ router.post('/login', async (req, res) => {
   } catch (err) {
     res.status(500).send({ message: 'Internal Server Error' })
   }
-})
-
-router.delete('/logout', (req, res) => {
-  res.clearCookie('nToken')
-  return res.redirect('/')
 })
 
 router.post('/register', async (req, res) => {

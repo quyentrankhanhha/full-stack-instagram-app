@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios'
 import { Formik } from 'formik'
 import React from 'react'
@@ -35,9 +36,16 @@ const LoginForm = ({ navigation }) => {
       url: loginApi,
       data: values,
     })
-      .then((res) => {
+      .then(async (res) => {
         setIsLoggedIn(true)
         setProfile(res.data.user)
+        try {
+          await AsyncStorage.setItem('token', res.data.token)
+          alert('Data successfully saved')
+        } catch (err) {
+          Alert(err)
+          alert(err)
+        }
         navigation.push('HomeScreen')
       })
       .catch((err) => {
