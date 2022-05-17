@@ -6,6 +6,7 @@ import { useAuth } from './context/AuthProvider'
 import HomeScreen from './screens/HomeScreen'
 import LoginScreen from './screens/LoginScreen'
 import NewPostScreen from './screens/NewPostScreen'
+import ProfileScreen from './screens/ProfileScreen'
 import RegisterScreen from './screens/RegisterScreen'
 
 const Stack = createStackNavigator()
@@ -25,6 +26,7 @@ export const SignedInStack = () => {
         <Stack.Screen name='NewPostScreen' component={NewPostScreen} />
         <Stack.Screen name='LoginScreen' component={LoginScreen} />
         <Stack.Screen name='RegisterScreen' component={RegisterScreen} />
+        <Stack.Screen name='ProfileScreen' component={ProfileScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   )

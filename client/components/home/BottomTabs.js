@@ -1,12 +1,20 @@
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import React, { useState } from 'react'
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { Divider } from 'react-native-elements/dist/divider/Divider'
 
-const BottomTabs = ({ icons }) => {
+const Tab = createBottomTabNavigator()
+
+const BottomTabs = ({ icons, navigation }) => {
   const [activeTab, setActiveTab] = useState('Home')
 
   const Icon = ({ icon }) => (
-    <TouchableOpacity onPress={() => setActiveTab(icon.name)}>
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate(icon.link)
+        setActiveTab(icon.name)
+      }}
+    >
       <Image
         source={{ uri: activeTab === icon.name ? icon.active : icon.inactive }}
         style={[
@@ -30,33 +38,6 @@ const BottomTabs = ({ icons }) => {
     </View>
   )
 }
-
-export const bottomTabIcons = [
-  {
-    name: 'Home',
-    active: 'https://img.icons8.com/ios-filled/48/000000/home.png',
-    inactive: 'https://img.icons8.com/ios/48/000000/home--v1.png',
-  },
-  {
-    name: 'Search',
-    active: 'https://img.icons8.com/ios-filled/48/000000/search--v1.png',
-    inactive:
-      'https://img.icons8.com/fluency-systems-regular/48/000000/search--v1.png',
-  },
-  {
-    name: 'Reels',
-    active: 'https://img.icons8.com/ios-filled/48/000000/circled-play.png',
-    inactive:
-      'https://img.icons8.com/fluency-systems-regular/48/000000/circled-play--v1.png',
-  },
-  {
-    name: 'Profile',
-    active:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWNTphqAcgRRkbHdhcWofAsVBon_jYRBw_v9EKxjwprkdXkJ62I6lcSiB6JgUEPl4kDeo&usqp=CAU',
-    inactive:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWNTphqAcgRRkbHdhcWofAsVBon_jYRBw_v9EKxjwprkdXkJ62I6lcSiB6JgUEPl4kDeo&usqp=CAU',
-  },
-]
 
 const styles = StyleSheet.create({
   wrapper: {

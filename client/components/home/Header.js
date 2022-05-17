@@ -1,9 +1,17 @@
 import React from 'react'
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native'
 
 const Header = ({ navigation }) => {
   return (
     <View style={styles.container}>
+      <TouchableOpacity>
+        <Image
+          source={{
+            uri: 'https://img.icons8.com/ios/50/000000/camera--v1.png',
+          }}
+          style={styles.cameraIcon}
+        />
+      </TouchableOpacity>
       <TouchableOpacity>
         <Image style={styles.logo} source={require('../../assets/logo.png')} />
       </TouchableOpacity>
@@ -18,20 +26,12 @@ const Header = ({ navigation }) => {
           />
         </TouchableOpacity>
         <TouchableOpacity>
-          <Image
-            source={{
-              uri: 'https://img.icons8.com/fluency-systems-regular/24/000000/like--v1.png',
-            }}
-            style={styles.icon}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <View style={styles.unreadBadge}>
+          {/* <View style={styles.unreadBadge}>
             <Text style={styles.unreadBadgeText}>11</Text>
-          </View>
+          </View> */}
           <Image
             source={{
-              uri: 'https://img.icons8.com/fluency-systems-regular/48/000000/facebook-messenger.png',
+              uri: 'https://img.icons8.com/ios/50/000000/menu-2.png',
             }}
             style={styles.icon}
           />
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
-    marginHorizontal: 20,
+    marginHorizontal: 10,
   },
 
   iconsContainer: {
@@ -57,6 +57,14 @@ const styles = StyleSheet.create({
     width: 100,
     height: 50,
     resizeMode: 'contain',
+  },
+
+  cameraIcon: {
+    width: 30,
+    height: 30,
+    resizeMode: 'contain',
+    marginLeft: 0,
+    paddingLeft: 0,
   },
 
   icon: {
