@@ -2,11 +2,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import React, { useEffect } from 'react'
+import BottomTab from './components/BottomTab/BottomTab'
 import { useAuth } from './context/AuthProvider'
 import HomeScreen from './screens/HomeScreen'
 import LoginScreen from './screens/LoginScreen'
 import NewPostScreen from './screens/NewPostScreen'
-import ProfileScreen from './screens/ProfileScreen'
 import RegisterScreen from './screens/RegisterScreen'
 
 const Stack = createStackNavigator()
@@ -18,15 +18,14 @@ const screenOptions = {
 export const SignedInStack = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName='HomeScreen'
-        screenOptions={screenOptions}
-      >
-        <Stack.Screen name='HomeScreen' component={HomeScreen} />
+      <Stack.Navigator screenOptions={screenOptions}>
+        <Stack.Screen name='MainScreen' component={BottomTab} />
         <Stack.Screen name='NewPostScreen' component={NewPostScreen} />
+
+        {/* <Stack.Screen name='HomeScreen' component={HomeScreen} />
         <Stack.Screen name='LoginScreen' component={LoginScreen} />
         <Stack.Screen name='RegisterScreen' component={RegisterScreen} />
-        <Stack.Screen name='ProfileScreen' component={ProfileScreen} />
+        <Stack.Screen name='ProfileScreen' component={ProfileScreen} /> */}
       </Stack.Navigator>
     </NavigationContainer>
   )

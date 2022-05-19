@@ -1,10 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import React from 'react'
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native'
-import BottomTabs from '../components/home/BottomTabs'
-import Header from '../components/home/Header'
-import Post from '../components/home/Post'
-import { bottomTabIcons } from '../constant/bottomTabIcons'
+import Header from '../components/Home/Header'
+import Post from '../components/Home/Post'
 import { POSTS } from '../data/posts'
 
 const HomeScreen = ({ navigation }) => {
@@ -22,7 +20,6 @@ const HomeScreen = ({ navigation }) => {
           <Post post={post} key={index} />
         ))}
       </ScrollView>
-      <BottomTabs navigation={navigation} icons={bottomTabIcons} />
     </SafeAreaView>
   )
 }

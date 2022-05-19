@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
 
   headerName: {
     fontSize: 30,
-    flexDirection: '700',
+    fontWeight: '700',
   },
 
   iconsContainer: {

@@ -1,20 +1,48 @@
+import * as ImagePicker from 'expo-image-picker'
 import { Formik } from 'formik'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Image, Text, TextInput, View } from 'react-native'
 import { Divider } from 'react-native-elements'
 import validUrl from 'valid-url'
 import * as yup from 'yup'
 
-const PLACEHOLDER_IMG =
-  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfQnp-XtDoYgXRsXKd9IFhY_HeWS_V3KhnZw&usqp=CAU'
-
 const uploadPostSchema = yup.object().shape({
-  imageUrl: yup.string().url().required('A URL is required'),
   caption: yup.string().max(2200, 'Caption has reached the character limit.'),
+  imageUrl: yup.mixed().required(),
 })
 
 const PostUploader = ({ navigation }) => {
-  const [thumbnailUrl, setThumnailUrl] = useState(PLACEHOLDER_IMG)
+  const [img, setImg] = useState(null)
+  const [hasGaleryPermission, setHasGalleryPermission] = useState(null)
+
+  useEffect(() => {
+    ;(async () => {
+      const galleryStatus =
+        await ImagePicker.requestMediaLibraryPermissionsAsync()
+      setHasGalleryPermission(galleryStatus.status === 'granted')
+    })()
+  }, [])
+
+  if (hasGaleryPermission === null) {
+    return <View />
+  }
+  if (hasGaleryPermission === false) {
+    return <Text>No permission!</Text>
+  }
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: false,
+      aspect: [1, 1],
+      quality: 1,
+    })
+
+    if (!result.cancelled) {
+      setImg(result.uri)
+    }
+  }
+
   return (
     <Formik
       initialValues={{ caption: '', imageUrl: '' }}
@@ -25,14 +53,7 @@ const PostUploader = ({ navigation }) => {
       validationSchema={uploadPostSchema}
       validateOnMount={true}
     >
-      {({
-        handleBlur,
-        handleChange,
-        handleSubmit,
-        values,
-        errors,
-        isValid,
-      }) => (
+      {({ handleBlur, handleChange, handleSubmit, values, errors }) => (
         <>
           <View
             style={{
@@ -41,14 +62,17 @@ const PostUploader = ({ navigation }) => {
               flexDirection: 'row',
             }}
           >
-            <Image
-              source={{
-                uri: validUrl.isUri(thumbnailUrl)
-                  ? thumbnailUrl
-                  : PLACEHOLDER_IMG,
-              }}
-              style={{ width: 100, height: 100 }}
-            />
+            {img ? (
+              <Image
+                source={{
+                  uri: validUrl.isUri(img),
+                }}
+                style={{ width: 100, height: 100 }}
+              />
+            ) : (
+              <Button title='Choose Image' onPress={() => pickImage()} />
+            )}
+
             <View style={{ flex: 1, marginLeft: 12 }}>
               <TextInput
                 style={{ fontSize: 18 }}
@@ -62,7 +86,8 @@ const PostUploader = ({ navigation }) => {
             </View>
           </View>
           <Divider width={0.2} orientation='vertical' />
-          <TextInput
+
+          {/* <TextInput
             onChange={(e) => setThumnailUrl(e.nativeEvent.text)}
             style={{ fontSize: 18 }}
             placeholder='Enter Image Url'
@@ -70,15 +95,17 @@ const PostUploader = ({ navigation }) => {
             onChangeText={handleChange('imageUrl')}
             onBlur={handleBlur('imageUrl')}
             value={values.imageUrl}
-          />
+          /> */}
 
-          {errors.imageUrl && (
-            <Text style={{ fontSize: 10, color: 'red' }}>
-              {errors.imageUrl}
-            </Text>
+          {errors.caption && (
+            <Text style={{ fontSize: 10, color: 'red' }}>{errors.caption}</Text>
           )}
 
-          <Button onPress={handleSubmit} title='Share' disabled={!isValid} />
+          <Button
+            onPress={handleSubmit}
+            title='Share'
+            disabled={!img && !values.caption}
+          />
         </>
       )}
     </Formik>
