@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native'
 import * as yup from 'yup'
-import { registerApi } from '../../api'
+import { REGISTER_URL } from '../../constant/api'
 
 const RegisterForm = ({ navigation }) => {
   const RegisterSchema = yup.object().shape({
@@ -30,7 +30,7 @@ const RegisterForm = ({ navigation }) => {
   const handleOnRegister = (values) => {
     axios({
       method: 'POST',
-      url: registerApi,
+      url: REGISTER_URL,
       data: values,
     })
       .then((res) => {
@@ -45,9 +45,14 @@ const RegisterForm = ({ navigation }) => {
       })
       .catch((err) => {
         if (err.response) {
-          Alert.alert('Error', err.response.data.message, [{ text: 'OK' }], {
-            cancelable: true,
-          })
+          Alert.alert(
+            'Error',
+            err.response.data.message,
+            [{ text: 'Try again!' }],
+            {
+              cancelable: true,
+            }
+          )
         }
         return err
       })

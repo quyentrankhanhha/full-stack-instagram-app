@@ -1,16 +1,13 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import React from 'react'
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native'
 import Header from '../components/Home/Header'
 import Post from '../components/Home/Post'
+import { usePosts } from '../context/PostProvider'
 import { POSTS } from '../data/posts'
 
 const HomeScreen = ({ navigation }) => {
-  const logout = () => {
-    AsyncStorage.removeItem('token').then(() => {
-      navigation.push('LoginScreen')
-    })
-  }
+  const { posts } = usePosts()
+  console.log(posts)
 
   return (
     <SafeAreaView style={styles.container}>

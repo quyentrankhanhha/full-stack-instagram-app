@@ -1,7 +1,11 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import React from 'react'
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { useAuth } from '../../context/AuthProvider'
 
 const Header = ({ navigation }) => {
+  const { setIsLoggedIn } = useAuth()
+
   return (
     <View style={styles.container}>
       <TouchableOpacity>
@@ -25,7 +29,13 @@ const Header = ({ navigation }) => {
             style={styles.icon}
           />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            AsyncStorage.clear()
+            setIsLoggedIn(false)
+            navigation.navigate('LoginScreen')
+          }}
+        >
           {/* <View style={styles.unreadBadge}>
             <Text style={styles.unreadBadgeText}>11</Text>
           </View> */}

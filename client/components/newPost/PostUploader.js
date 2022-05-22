@@ -1,19 +1,38 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import axios from 'axios'
 import * as ImagePicker from 'expo-image-picker'
 import { Formik } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { Button, Image, Text, TextInput, View } from 'react-native'
+import { Alert, Button, Image, Text, TextInput, View } from 'react-native'
 import { Divider } from 'react-native-elements'
-import validUrl from 'valid-url'
 import * as yup from 'yup'
+import { PIC_URL } from '../../constant/api'
 
 const uploadPostSchema = yup.object().shape({
   caption: yup.string().max(2200, 'Caption has reached the character limit.'),
-  imageUrl: yup.mixed().required(),
+  image: yup.mixed().required(),
 })
 
 const PostUploader = ({ navigation }) => {
   const [img, setImg] = useState(null)
   const [hasGaleryPermission, setHasGalleryPermission] = useState(null)
+  const [token, setToken] = useState('')
+
+  const getToken = async () => {
+    try {
+      const value = await AsyncStorage.getItem('token')
+
+      if (value !== null) {
+        setToken(value)
+      }
+    } catch (e) {
+      alert('Failed to fetch the input from storage')
+    }
+  }
+
+  useEffect(() => {
+    getToken()
+  }, [])
 
   useEffect(() => {
     ;(async () => {
@@ -30,7 +49,7 @@ const PostUploader = ({ navigation }) => {
     return <Text>No permission!</Text>
   }
 
-  const pickImage = async () => {
+  const pickImage = async (handleChange) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: false,
@@ -39,17 +58,37 @@ const PostUploader = ({ navigation }) => {
     })
 
     if (!result.cancelled) {
-      setImg(result.uri)
+      handleChange(result.uri)
     }
+  }
+
+  const onSubmit = (values) => {
+    axios
+      .post(PIC_URL, values, {
+        headers: {
+          authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      })
+      .then((res) => {
+        Alert.alert('You have shared successfully!', [{ text: 'OK' }])
+      })
+      .catch((err) => {
+        if (err.response) {
+          Alert.alert('Error', err.response.data.message, [
+            { text: 'Try again!' },
+          ])
+        }
+        return Alert.alert('Error', err, [{ text: 'Try again!' }])
+      })
+    navigation.goBack()
+    // navigation.navigate('Home', { img, caption: values.caption })
   }
 
   return (
     <Formik
-      initialValues={{ caption: '', imageUrl: '' }}
-      onSubmit={(values) => {
-        console.log(values)
-        navigation.goBack()
-      }}
+      initialValues={{ caption: '', image: '' }}
+      onSubmit={onSubmit}
       validationSchema={uploadPostSchema}
       validateOnMount={true}
     >
@@ -62,15 +101,19 @@ const PostUploader = ({ navigation }) => {
               flexDirection: 'row',
             }}
           >
-            {img ? (
+            {values.image && values.image.length > 0 ? (
               <Image
                 source={{
-                  uri: validUrl.isUri(img),
+                  uri: values.image,
                 }}
                 style={{ width: 100, height: 100 }}
               />
             ) : (
-              <Button title='Choose Image' onPress={() => pickImage()} />
+              <Button
+                title='Choose Image'
+                name='image'
+                onPress={() => pickImage(handleChange('image'))}
+              />
             )}
 
             <View style={{ flex: 1, marginLeft: 12 }}>
@@ -86,16 +129,6 @@ const PostUploader = ({ navigation }) => {
             </View>
           </View>
           <Divider width={0.2} orientation='vertical' />
-
-          {/* <TextInput
-            onChange={(e) => setThumnailUrl(e.nativeEvent.text)}
-            style={{ fontSize: 18 }}
-            placeholder='Enter Image Url'
-            placeholderTextColor='gray'
-            onChangeText={handleChange('imageUrl')}
-            onBlur={handleBlur('imageUrl')}
-            value={values.imageUrl}
-          /> */}
 
           {errors.caption && (
             <Text style={{ fontSize: 10, color: 'red' }}>{errors.caption}</Text>

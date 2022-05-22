@@ -14,7 +14,7 @@ const Post = ({ post }) => {
         <Likes post={post} />
         <Caption post={post} />
         <CommentsSection post={post} />
-        <Comments post={post} />
+        {post.comments.length > 0 ? <Comments post={post} /> : <></>}
       </View>
     </View>
   )
@@ -104,7 +104,8 @@ const CommentsSection = ({ post }) => (
   <View style={{ marginTop: 5 }}>
     {!!post.comments.length && (
       <Text style={{ color: 'gray' }}>
-        View {post.comments.length > 1 ? 'all' : ''} {post.comments.length}{' '}
+        View {post.comments.length > 2 ? 'all' : ''}
+        {post.comments.length}{' '}
         {post.comments.length > 1 ? 'comments' : 'comment'}
       </Text>
     )}

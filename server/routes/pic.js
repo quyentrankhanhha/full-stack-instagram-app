@@ -1,22 +1,9 @@
 const router = require('express').Router()
+const { json } = require('body-parser')
 const requireLogin = require('../middleware/requireLogin')
 const { Post } = require('../model/pic')
 var cloudinary = require('cloudinary').v2
 const upload = require('../utils/multer')
-
-exports.uploads = (file) => {
-  return new Promise((res) => {
-    cloudinary.uploader.upload(
-      file,
-      (res) => {
-        resolve({ url: res.url, id: res.public_id })
-      },
-      {
-        resource_type: 'auto',
-      }
-    )
-  })
-}
 
 router.get('/', (req, res) => {
   Post.find()
@@ -41,10 +28,11 @@ router.get('/:postId', (req, res) => {
     )
 })
 
-router.post('/', upload.single('photo'), requireLogin, (req, res) => {
-  const img = cloudinary.uploader.upload(req.file.path)
+router.post('/', upload.single('image'), requireLogin, async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  const { caption, image } = req.body
+  const img = cloudinary.uploader.upload(image)
 
-  const { caption } = req.body
   if (!caption) {
     res.status(422).json({ message: 'Please fill all the fields' })
   }
@@ -61,7 +49,7 @@ router.post('/', upload.single('photo'), requireLogin, (req, res) => {
       res.json({ post: result })
     })
     .catch((err) => {
-      console.log(err)
+      res.json(err)
     })
 })
 

@@ -12,11 +12,11 @@ import {
   View,
 } from 'react-native'
 import * as yup from 'yup'
-import { loginApi } from '../../api/index'
+import { LOGIN_URL } from '../../constant/api'
 import { useAuth } from '../../context/AuthProvider'
 
 const LoginForm = ({ navigation }) => {
-  const { setIsLoggedIn, setProfile } = useAuth()
+  const { setIsLoggedIn, setUser } = useAuth()
 
   const LoginSchema = yup.object().shape({
     email: yup.string().email().required('An email is required'),
@@ -33,15 +33,14 @@ const LoginForm = ({ navigation }) => {
   const handleOnLogin = (values) => {
     axios({
       method: 'POST',
-      url: loginApi,
+      url: LOGIN_URL,
       data: values,
     })
       .then(async (res) => {
         setIsLoggedIn(true)
-        setProfile(res.data.user)
+        setUser(res.data.user)
         try {
           await AsyncStorage.setItem('token', res.data.token)
-          alert('Data successfully saved')
         } catch (err) {
           Alert(err)
           alert(err)

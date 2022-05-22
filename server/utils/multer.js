@@ -3,11 +3,10 @@ const multer = require('multer')
 
 // multer config
 module.exports = multer({
-  storage: multer.diskStorage({}),
+  storage: './uploads',
   fileFilter: (req, file, cb) => {
-    let ext = path.extname(file.originalname)
-    if (ext !== '.jpg' && ext !== '.jpeg' && ext !== 'png') {
-      cb(new Error('File type is not supported!'), false)
+    if (!file.mimetype.match(/png||jpeg||jpg||gif$i/)) {
+      cb(new Error('Unsupported file type!'), false)
       return
     }
     cb(null, true)

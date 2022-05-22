@@ -3,10 +3,6 @@ const { User, validateLogin, validateRegister } = require('../model/user')
 const bcrypt = require('bcrypt')
 const requireLogin = require('../middleware/requireLogin')
 
-router.get('/protected', requireLogin, (req, res) => {
-  res.send('helo')
-})
-
 router.post('/login', async (req, res) => {
   try {
     const { error } = validateLogin(req.body)
@@ -23,7 +19,7 @@ router.post('/login', async (req, res) => {
 
     const token = user.generateAuthToken()
     const { _id, name, email, pic, username } = user
-    res.status(201).send({
+    return res.status(201).send({
       token: token,
       user: { _id, name, email, pic, username },
       message: 'Logged in successfully!',
