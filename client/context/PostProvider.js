@@ -5,17 +5,23 @@ import { PIC_URL } from '../constant/api'
 const PostContext = createContext()
 
 const PostProvider = ({ children }) => {
-  const [posts, setPosts] = useState([])
+  const [postList, setPostList] = useState([])
 
-  useEffect(async () => {
-    await axios
+  const getPostList = () => {
+    axios
       .get(PIC_URL)
-      .then((res) => setPosts(res.data))
+      .then((res) => setPostList(res.data))
       .catch((err) => console.log(err))
+  }
+
+  useEffect(() => {
+    getPostList()
   }, [])
 
+  console.log(postList)
+
   return (
-    <PostContext.Provider value={{ posts, setPosts }}>
+    <PostContext.Provider value={{ postList, setPostList, getPostList }}>
       {children}
     </PostContext.Provider>
   )

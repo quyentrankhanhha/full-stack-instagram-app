@@ -1,5 +1,4 @@
 const router = require('express').Router()
-const { json } = require('body-parser')
 const requireLogin = require('../middleware/requireLogin')
 const { Post } = require('../model/pic')
 var cloudinary = require('cloudinary').v2
@@ -7,13 +6,17 @@ const upload = require('../utils/multer')
 
 router.get('/', (req, res) => {
   Post.find()
-    .populate('createdBy', '_id name')
-    .populate('comments.createdBy', '_id name')
+    .populate('createdBy', '_id username')
+    .populate('comments.createdBy', '_id username')
     .sort(`-createdAt`)
     .then((posts) => {
       res.json({ posts })
     })
-    .catch((err) => console.log(err))
+    .catch((err) =>
+      res.status(404).json({
+        message: err,
+      })
+    )
 })
 
 router.get('/:postId', (req, res) => {
@@ -30,19 +33,23 @@ router.get('/:postId', (req, res) => {
 
 router.post('/', upload.single('image'), requireLogin, async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*')
-  const { caption, image } = req.body
-  const img = cloudinary.uploader.upload(image)
 
+  const { caption, image } = req.body
+  const img = cloudinary.uploader.upload(req.file.path)
+  // if (!req.file) {
+  //   throw new Error('Image is not presented!')
+  // }
   if (!caption) {
     res.status(422).json({ message: 'Please fill all the fields' })
   }
+
   const post = new Post({
     caption,
     photo: img,
     createdBy: req.user,
   })
-
   req.user.password = undefined
+
   post
     .save()
     .then((result) => {

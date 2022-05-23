@@ -11,7 +11,7 @@ const Post = ({ post }) => {
       <PostImage post={post} />
       <View style={{ marginHorizontal: 15, marginTop: 10 }}>
         <PostFooter />
-        <Likes post={post} />
+        <Likes />
         <Caption post={post} />
         <CommentsSection post={post} />
         {post.comments.length > 0 ? <Comments post={post} /> : <></>}
@@ -42,7 +42,7 @@ const PostImage = ({ post }) => {
   return (
     <View style={{ width: '100%', height: 450 }}>
       <Image
-        source={{ uri: post.imgUrl }}
+        source={{ uri: post?.photo }}
         style={{ height: '100%', resizeMode: 'cover' }}
       />
     </View>
@@ -86,7 +86,8 @@ const Icon = ({ imgStyle, imgUrl }) => (
 const Likes = ({ post }) => (
   <View style={{ flexDirection: 'row', marginTop: 4 }}>
     <Text style={{ fontWeight: '600' }}>
-      {post.likes.toLocaleString('en')} likes
+      123 likes
+      {/* {post.likes.toLocaleString('en')} likes */}
     </Text>
   </View>
 )
@@ -94,7 +95,7 @@ const Likes = ({ post }) => (
 const Caption = ({ post }) => (
   <View style={{ marginTop: 5 }}>
     <Text>
-      <Text style={{ fontWeight: '600' }}>{post.user}</Text>
+      <Text style={{ fontWeight: '600' }}>{post.createdBy.username}</Text>
       <Text> {post.caption}</Text>
     </Text>
   </View>
@@ -117,8 +118,10 @@ const Comments = ({ post }) => (
     {post.comments.map((comment, index) => (
       <View key={index} style={{ flexDirection: 'row', marginTop: 3 }}>
         <Text>
-          <Text style={{ fontWeight: '600' }}>{comment.user}</Text>{' '}
-          {comment.comment}
+          <Text style={{ fontWeight: '600' }}>
+            {comment.createdBy.username}
+          </Text>{' '}
+          {comment.text}
         </Text>
       </View>
     ))}
