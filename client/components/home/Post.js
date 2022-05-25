@@ -4,6 +4,10 @@ import { Divider } from 'react-native-elements'
 import { postFooterIcons } from '../../constant/postFooterIcons'
 
 const Post = ({ post }) => {
+  console.log(post.photo)
+  const base64ToDataUri = (base64) => {
+    return 'data:image/png;base64,' + base64
+  }
   return (
     <View style={{ marginBottom: 30 }}>
       <Divider width={1} orientation='vertical' />

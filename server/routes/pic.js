@@ -3,6 +3,7 @@ const requireLogin = require('../middleware/requireLogin')
 const { Post } = require('../model/pic')
 var cloudinary = require('cloudinary').v2
 const upload = require('../utils/multer')
+const sharp = require('sharp')
 
 router.get('/', (req, res) => {
   Post.find()
@@ -31,21 +32,23 @@ router.get('/:postId', (req, res) => {
     )
 })
 
-router.post('/', upload.single('image'), requireLogin, async (req, res) => {
+router.post('/', requireLogin, async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*')
 
-  const { caption, image } = req.body
-  const img = cloudinary.uploader.upload(req.file.path)
-  // if (!req.file) {
-  //   throw new Error('Image is not presented!')
-  // }
-  if (!caption) {
-    res.status(422).json({ message: 'Please fill all the fields' })
+  const { caption, imageBase64 } = req.body
+
+  if (!imageBase64) {
+    res.status(422).json({ message: 'Please upload your image' })
   }
+  if (!caption) {
+    res.status(422).json({ message: 'Please write your caption' })
+  }
+
+  let resizeImg = sharp(imageBase64).resize(32, 32)
 
   const post = new Post({
     caption,
-    photo: img,
+    photo: resizeImg,
     createdBy: req.user,
   })
   req.user.password = undefined

@@ -3,31 +3,22 @@ import axios from 'axios'
 import * as ImagePicker from 'expo-image-picker'
 import { Formik } from 'formik'
 import React, { useEffect, useState } from 'react'
-import {
-  Alert,
-  Button,
-  Image,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native'
+import { Alert, Button, Image, Text, TextInput, View } from 'react-native'
 import { Divider } from 'react-native-elements'
 import * as yup from 'yup'
 import { PIC_URL } from '../../constant/api'
 import { usePosts } from '../../context/PostProvider'
 
-const SUPPORTED_FORMATS = ['image/jpg', 'image/jpeg', 'image/png']
-
 const uploadPostSchema = yup.object().shape({
   caption: yup.string().max(2200, 'Caption has reached the character limit.'),
-  image: yup.mixed().required(),
+  imageBase64: yup.string().required(),
 })
 
 const PostUploader = ({ navigation }) => {
   const [hasGaleryPermission, setHasGalleryPermission] = useState(null)
   const [token, setToken] = useState('')
   const { postList, setPostList } = usePosts()
+  const [image, setImage] = useState({})
 
   const getToken = async () => {
     try {
@@ -59,24 +50,20 @@ const PostUploader = ({ navigation }) => {
   if (hasGaleryPermission === false) {
     return <Text>No permission!</Text>
   }
-  const options = {
-    title: 'Select Photo',
-    storageOptions: {
-      skipBackup: true,
-      path: 'images',
-    },
-  }
+
   const pickImage = async (handleChange) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: false,
       aspect: [1, 1],
       quality: 1,
+      base64: true,
     })
-    console.log(result)
 
     if (!result.cancelled) {
-      handleChange(result.uri)
+      handleChange(result.base64)
+
+      setImage(result)
     }
   }
 
@@ -85,7 +72,6 @@ const PostUploader = ({ navigation }) => {
       .post(PIC_URL, values, {
         headers: {
           authorization: `Bearer ${token}`,
-          'Content-Type': 'image/jpeg',
         },
       })
       .then((res) => {
@@ -101,19 +87,20 @@ const PostUploader = ({ navigation }) => {
         return Alert.alert('Error', err, [{ text: 'Try again!' }])
       })
     navigation.goBack()
-
-    // navigation.navigate('Home', { img: values.image, caption: values.caption })
   }
 
   return (
     <Formik
-      initialValues={{ caption: '', image: '' }}
+      initialValues={{
+        caption: '',
+        imageBase64: '',
+      }}
       onSubmit={onSubmit}
       validationSchema={uploadPostSchema}
       validateOnMount={true}
     >
       {({ handleBlur, handleChange, handleSubmit, values, errors }) => (
-        <form>
+        <View>
           <View
             style={{
               margin: 20,
@@ -121,21 +108,21 @@ const PostUploader = ({ navigation }) => {
               flexDirection: 'row',
             }}
           >
-            {values.image && values.image.length > 0 ? (
+            {image.uri ? (
               <Image
                 source={{
-                  uri: values.image,
+                  uri: image.uri,
                 }}
                 style={{ width: 100, height: 100 }}
               />
             ) : (
-              <TouchableOpacity
+              <Button
                 title='Choose Image'
                 name='image'
-                onPress={() => pickImage(handleChange('image'))}
+                onPress={() => pickImage(handleChange('imageBase64'))}
               >
                 <Text>Upload Image</Text>
-              </TouchableOpacity>
+              </Button>
             )}
 
             <View style={{ flex: 1, marginLeft: 12 }}>
@@ -161,7 +148,7 @@ const PostUploader = ({ navigation }) => {
             title='Share'
             disabled={!values.image && !values.caption}
           />
-        </form>
+        </View>
       )}
     </Formik>
   )

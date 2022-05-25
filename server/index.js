@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 const cors = require('cors')
+const bodyParser = require('body-parser')
 
 const corsOptions = {
   origin: '*',
@@ -17,8 +18,9 @@ const picRoute = require('./routes/pic')
 require('./database/mongoose')
 
 // middlewares
-app.use(express.json())
 app.use(cors(corsOptions))
+app.use(bodyParser.json({ limit: '50mb' }))
+app.use(bodyParser.urlencoded({ limit: '50mb' }))
 
 const PORT = process.env.PORT || 8000
 const User = require('./model/user')
