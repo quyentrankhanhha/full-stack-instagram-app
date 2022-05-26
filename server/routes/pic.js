@@ -3,7 +3,6 @@ const requireLogin = require('../middleware/requireLogin')
 const { Post } = require('../model/pic')
 var cloudinary = require('cloudinary').v2
 const upload = require('../utils/multer')
-const sharp = require('sharp')
 
 router.get('/', (req, res) => {
   Post.find()
@@ -44,15 +43,13 @@ router.post('/', requireLogin, async (req, res) => {
     res.status(422).json({ message: 'Please write your caption' })
   }
 
-  let resizeImg = sharp(imageBase64).resize(32, 32)
-
   const post = new Post({
     caption,
-    photo: resizeImg,
+    photo: imageBase64,
     createdBy: req.user,
   })
-  req.user.password = undefined
 
+  req.user.password = undefined
   post
     .save()
     .then((result) => {

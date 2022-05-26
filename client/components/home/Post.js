@@ -2,12 +2,9 @@ import React from 'react'
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { Divider } from 'react-native-elements'
 import { postFooterIcons } from '../../constant/postFooterIcons'
+import { base64ToDataUri } from '../../utils'
 
 const Post = ({ post }) => {
-  console.log(post.photo)
-  const base64ToDataUri = (base64) => {
-    return 'data:image/png;base64,' + base64
-  }
   return (
     <View style={{ marginBottom: 30 }}>
       <Divider width={1} orientation='vertical' />
@@ -35,7 +32,9 @@ const PostHeader = ({ post }) => (
   >
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
       <Image source={{ uri: post.userImg }} style={styles.story} />
-      <Text style={{ marginLeft: 5, fontWeight: '700' }}>{post.user}</Text>
+      <Text style={{ marginLeft: 5, fontWeight: '700' }}>
+        {post.createdBy.username}
+      </Text>
     </View>
 
     <Text style={{ fontWeight: '900' }}>...</Text>
@@ -46,7 +45,9 @@ const PostImage = ({ post }) => {
   return (
     <View style={{ width: '100%', height: 450 }}>
       <Image
-        source={{ uri: post?.photo }}
+        source={{
+          uri: base64ToDataUri(post?.photo),
+        }}
         style={{ height: '100%', resizeMode: 'cover' }}
       />
     </View>
@@ -99,7 +100,9 @@ const Likes = ({ post }) => (
 const Caption = ({ post }) => (
   <View style={{ marginTop: 5 }}>
     <Text>
-      <Text style={{ fontWeight: '600' }}>{post.createdBy.username}</Text>
+      <Text style={{ fontWeight: '600' }}>
+        {post?.createdBy?.username || 'Unknown'}
+      </Text>
       <Text> {post.caption}</Text>
     </Text>
   </View>

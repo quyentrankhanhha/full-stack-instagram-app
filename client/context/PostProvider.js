@@ -18,8 +18,6 @@ const PostProvider = ({ children }) => {
     getPostList()
   }, [])
 
-  console.log(postList)
-
   return (
     <PostContext.Provider value={{ postList, setPostList, getPostList }}>
       {children}

@@ -17,7 +17,7 @@ const uploadPostSchema = yup.object().shape({
 const PostUploader = ({ navigation }) => {
   const [hasGaleryPermission, setHasGalleryPermission] = useState(null)
   const [token, setToken] = useState('')
-  const { postList, setPostList } = usePosts()
+  const { postList, setPostList } = usePosts([])
   const [image, setImage] = useState({})
 
   const getToken = async () => {
@@ -44,25 +44,17 @@ const PostUploader = ({ navigation }) => {
     })()
   }, [])
 
-  if (hasGaleryPermission === null) {
-    return <View />
-  }
-  if (hasGaleryPermission === false) {
-    return <Text>No permission!</Text>
-  }
-
   const pickImage = async (handleChange) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: false,
       aspect: [1, 1],
-      quality: 1,
+      quality: 0,
       base64: true,
     })
 
     if (!result.cancelled) {
       handleChange(result.base64)
-
       setImage(result)
     }
   }
@@ -75,18 +67,25 @@ const PostUploader = ({ navigation }) => {
         },
       })
       .then((res) => {
-        Alert.alert('You have shared successfully!', [{ text: 'OK' }])
-        setPostList([...postList.post, res.data])
+        // Alert.alert('You have shared successfully!', [{ text: 'OK' }])
       })
       .catch((err) => {
-        if (err.response) {
-          Alert.alert('Error', err.response.data.message, [
-            { text: 'Try again!' },
-          ])
-        }
+        console.log(err)
+        // if (err.response) {
+        //   Alert.alert('Error', err.response.data.message, [
+        //     { text: 'Try again!' },
+        //   ])
+        // }
         return Alert.alert('Error', err, [{ text: 'Try again!' }])
       })
     navigation.goBack()
+  }
+
+  if (hasGaleryPermission === null) {
+    return <View />
+  }
+  if (hasGaleryPermission === false) {
+    return <Text>No permission!</Text>
   }
 
   return (
