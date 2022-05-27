@@ -7,7 +7,6 @@ import { Alert, Button, Image, Text, TextInput, View } from 'react-native'
 import { Divider } from 'react-native-elements'
 import * as yup from 'yup'
 import { PIC_URL } from '../../constant/api'
-import { usePosts } from '../../context/PostProvider'
 
 const uploadPostSchema = yup.object().shape({
   caption: yup.string().max(2200, 'Caption has reached the character limit.'),
@@ -17,7 +16,6 @@ const uploadPostSchema = yup.object().shape({
 const PostUploader = ({ navigation }) => {
   const [hasGaleryPermission, setHasGalleryPermission] = useState(null)
   const [token, setToken] = useState('')
-  const { postList, setPostList } = usePosts([])
   const [image, setImage] = useState({})
 
   const getToken = async () => {
@@ -67,6 +65,7 @@ const PostUploader = ({ navigation }) => {
         },
       })
       .then((res) => {
+        console.log(res)
         // Alert.alert('You have shared successfully!', [{ text: 'OK' }])
       })
       .catch((err) => {

@@ -4,24 +4,24 @@ import { Divider } from 'react-native-elements'
 import { postFooterIcons } from '../../constant/postFooterIcons'
 import { base64ToDataUri } from '../../utils'
 
-const Post = ({ post }) => {
+const Post = ({ post, navigation, deletePost }) => {
   return (
     <View style={{ marginBottom: 30 }}>
       <Divider width={1} orientation='vertical' />
-      <PostHeader post={post} />
+      <PostHeader post={post} deletePost={deletePost} />
       <PostImage post={post} />
       <View style={{ marginHorizontal: 15, marginTop: 10 }}>
         <PostFooter />
         <Likes />
         <Caption post={post} />
-        <CommentsSection post={post} />
+        <CommentsSection post={post} navigation={navigation} />
         {post.comments.length > 0 ? <Comments post={post} /> : <></>}
       </View>
     </View>
   )
 }
 
-const PostHeader = ({ post }) => (
+const PostHeader = ({ post, deletePost }) => (
   <View
     style={{
       flexDirection: 'row',
@@ -36,8 +36,24 @@ const PostHeader = ({ post }) => (
         {post.createdBy.username}
       </Text>
     </View>
-
-    <Text style={{ fontWeight: '900' }}>...</Text>
+    <View style={{ flexDirection: 'row' }}>
+      <TouchableOpacity>
+        <Image
+          source={{
+            uri: 'https://img.icons8.com/external-flat-icons-inmotus-design/67/000000/external-dots-internet-messenger-flat-icons-inmotus-design.png',
+          }}
+          style={styles.icon}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => deletePost(post._id)}>
+        <Image
+          source={{
+            uri: 'https://img.icons8.com/material-outlined/24/000000/trash--v1.png',
+          }}
+          style={styles.icon}
+        />
+      </TouchableOpacity>
+    </View>
   </View>
 )
 
@@ -108,10 +124,13 @@ const Caption = ({ post }) => (
   </View>
 )
 
-const CommentsSection = ({ post }) => (
+const CommentsSection = ({ post, navigation }) => (
   <View style={{ marginTop: 5 }}>
     {!!post.comments.length && (
-      <Text style={{ color: 'gray' }}>
+      <Text
+        style={{ color: 'gray' }}
+        onPress={() => navigation.navigate('CommentScreen')}
+      >
         View {post.comments.length > 2 ? 'all' : ''}
         {post.comments.length}{' '}
         {post.comments.length > 1 ? 'comments' : 'comment'}
@@ -148,6 +167,13 @@ const styles = StyleSheet.create({
   footerIcon: {
     width: 33,
     height: 33,
+  },
+
+  icon: {
+    width: 25,
+    height: 25,
+    marginLeft: 10,
+    resizeMode: 'contain',
   },
 
   leftFooterIconsContainer: {

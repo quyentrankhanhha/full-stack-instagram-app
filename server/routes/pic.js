@@ -60,7 +60,7 @@ router.post('/', requireLogin, async (req, res) => {
     })
 })
 
-router.put('/', (req, res) => {
+router.put('/:postId', (req, res) => {
   Post.findByIdAndUpdate(
     req.body.postId,
     { $set: { caption: req.body.caption } },
@@ -94,7 +94,7 @@ router.put('/comment', requireLogin, (req, res) => {
     })
 })
 
-router.delete('/', requireLogin, (req, res) => {
+router.delete('/:postId', requireLogin, async (req, res) => {
   Post.findOne({ _id: req.body.postId })
     .populate('createdBy', '_id')
     .exec((err, post) => {
@@ -105,11 +105,12 @@ router.delete('/', requireLogin, (req, res) => {
       if (post.createdBy._id.toString() === req.user._id.toString()) {
         post
           .remove()
-          .then((res) => {
-            return res.status(204).json({ message: res })
+          .then((response) => {
+            return res.status(204).json({ message: 'Deleted!' })
           })
           .catch((err) => {
-            return res.status(404).json({ message: err })
+            console.log(err)
+            return res.status(404).json({})
           })
       }
     })
