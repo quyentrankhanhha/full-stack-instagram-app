@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import React, { useEffect } from 'react'
 import BottomTab from './components/BottomTab/BottomTab'
 import { useAuth } from './context/AuthProvider'
+import CommentScreen from './screens/CommentScreen'
 import HomeScreen from './screens/HomeScreen'
 import LoginScreen from './screens/LoginScreen'
 import NewPostScreen from './screens/NewPostScreen'
@@ -25,6 +26,7 @@ export const SignedInStack = () => {
         <Stack.Screen name='HomeScreen' component={HomeScreen} />
         <Stack.Screen name='LoginScreen' component={LoginScreen} />
         <Stack.Screen name='ProfileScreen' component={ProfileScreen} />
+        <Stack.Screen name='CommentScreen' component={CommentScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   )

@@ -1,27 +1,96 @@
-import React from 'react'
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import axios from 'axios'
+import React, { useState } from 'react'
+import {
+  Button,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import { Divider } from 'react-native-elements'
+import { PIC_URL } from '../../constant/api'
 import { postFooterIcons } from '../../constant/postFooterIcons'
 import { base64ToDataUri } from '../../utils'
 
-const Post = ({ post, navigation, deletePost }) => {
+const Post = ({ post, navigation, deletePost, token }) => {
+  const [isEdited, setIsEdited] = useState(false)
+  const [caption, setCaption] = useState(post.caption)
+  const [comment, setComment] = useState('')
+  const [comments, setComments] = useState(post.comments)
+
+  const toggleEdit = () => setIsEdited(!isEdited)
+  const captionOnChange = (text) => setCaption(text)
+  const commentOnChange = (text) => {
+    setComment(text)
+  }
+
+  const handleEditCaption = async () => {
+    const data = {
+      postId: post._id,
+      caption,
+    }
+    await axios
+      .put(PIC_URL + '/' + post._id, data, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        toggleEdit()
+        console.log(res)
+      })
+      .catch((err) => console.log(err))
+  }
+
+  const handleAddComment = async () => {
+    const data = {
+      postId: post._id,
+      text: comment,
+    }
+    await axios
+      .put(PIC_URL + '/comment', data, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        setComments(...comments, { text: comment, createdBy: post.createdBy })
+        setComment('')
+      })
+      .catch((err) => console.log(err))
+  }
+
   return (
     <View style={{ marginBottom: 30 }}>
       <Divider width={1} orientation='vertical' />
-      <PostHeader post={post} deletePost={deletePost} />
+      <PostHeader post={post} deletePost={deletePost} toggleEdit={toggleEdit} />
       <PostImage post={post} />
       <View style={{ marginHorizontal: 15, marginTop: 10 }}>
         <PostFooter />
         <Likes />
-        <Caption post={post} />
-        <CommentsSection post={post} navigation={navigation} />
-        {post.comments.length > 0 ? <Comments post={post} /> : <></>}
+        <Caption
+          post={post}
+          isEdited={isEdited}
+          caption={caption}
+          captionOnChange={captionOnChange}
+          handleEditCaption={handleEditCaption}
+        />
+        {/* <CommentsSection post={post} navigation={navigation} /> */}
+        {comments.length > 0 ? <Comments post={post} /> : <></>}
+        <PostComment
+          comment={comment}
+          commentOnChange={commentOnChange}
+          handleAddComment={handleAddComment}
+        />
       </View>
     </View>
   )
 }
 
-const PostHeader = ({ post, deletePost }) => (
+const PostHeader = ({ post, deletePost, toggleEdit }) => (
   <View
     style={{
       flexDirection: 'row',
@@ -37,7 +106,7 @@ const PostHeader = ({ post, deletePost }) => (
       </Text>
     </View>
     <View style={{ flexDirection: 'row' }}>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={toggleEdit}>
         <Image
           source={{
             uri: 'https://img.icons8.com/external-flat-icons-inmotus-design/67/000000/external-dots-internet-messenger-flat-icons-inmotus-design.png',
@@ -106,20 +175,43 @@ const Icon = ({ imgStyle, imgUrl }) => (
 
 const Likes = ({ post }) => (
   <View style={{ flexDirection: 'row', marginTop: 4 }}>
-    <Text style={{ fontWeight: '600' }}>
-      123 likes
-      {/* {post.likes.toLocaleString('en')} likes */}
-    </Text>
+    <Text style={{ fontWeight: '600' }}>123 likes</Text>
   </View>
 )
 
-const Caption = ({ post }) => (
+const Caption = ({
+  post,
+  handleEditCaption,
+  isEdited,
+  caption,
+  captionOnChange,
+}) => (
   <View style={{ marginTop: 5 }}>
     <Text>
       <Text style={{ fontWeight: '600' }}>
-        {post?.createdBy?.username || 'Unknown'}
+        {post?.createdBy?.username || 'Unknown'}{' '}
       </Text>
-      <Text> {post.caption}</Text>
+      {!isEdited ? (
+        <Text>{post.caption}</Text>
+      ) : (
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: '90%',
+          }}
+        >
+          <TextInput
+            style={{ paddingBottom: 10, width: '100%' }}
+            value={caption}
+            onChangeText={captionOnChange}
+            multiline
+            editable
+            maxLength={10}
+          />
+          <Button title='Done' onPress={handleEditCaption} />
+        </View>
+      )}
     </Text>
   </View>
 )
@@ -129,7 +221,12 @@ const CommentsSection = ({ post, navigation }) => (
     {!!post.comments.length && (
       <Text
         style={{ color: 'gray' }}
-        onPress={() => navigation.navigate('CommentScreen')}
+        onPress={() =>
+          navigation.navigate('CommentScreen', {
+            postId: post._id,
+            user: createdBy,
+          })
+        }
       >
         View {post.comments.length > 2 ? 'all' : ''}
         {post.comments.length}{' '}
@@ -154,6 +251,23 @@ const Comments = ({ post }) => (
   </>
 )
 
+const PostComment = ({ comment, commentOnChange, handleAddComment }) => (
+  <View style={styles.captionContainer}>
+    <TextInput
+      placeholder='Add a comment'
+      value={comment}
+      onChangeText={commentOnChange}
+      multiline
+      editable
+      maxLength={10}
+      style={styles.addCaptionInput}
+    />
+    <Pressable title='Post' onPress={handleAddComment} disabled={!comment}>
+      <Text>Post</Text>
+    </Pressable>
+  </View>
+)
+
 const styles = StyleSheet.create({
   story: {
     width: 35,
@@ -167,6 +281,19 @@ const styles = StyleSheet.create({
   footerIcon: {
     width: 33,
     height: 33,
+  },
+
+  captionContainer: {
+    paddingTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+  },
+
+  addCaptionInput: {
+    width: '100%',
+    paddingBottom: 10,
   },
 
   icon: {

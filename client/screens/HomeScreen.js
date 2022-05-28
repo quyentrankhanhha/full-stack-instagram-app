@@ -60,6 +60,7 @@ const HomeScreen = ({ navigation }) => {
         )}
         {postList?.posts?.map((post, index) => (
           <Post
+            token={token}
             post={post}
             key={index}
             navigation={navigation}

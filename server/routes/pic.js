@@ -60,18 +60,6 @@ router.post('/', requireLogin, async (req, res) => {
     })
 })
 
-router.put('/:postId', (req, res) => {
-  Post.findByIdAndUpdate(
-    req.body.postId,
-    { $set: { caption: req.body.caption } },
-    { new: true }
-  ).exec((err, result) => {
-    if (err) {
-      return res.status(422).json({ message: `${err}` })
-    } else res.json(result)
-  })
-})
-
 router.put('/comment', requireLogin, (req, res) => {
   const comment = {
     text: req.body.text,
@@ -90,8 +78,20 @@ router.put('/comment', requireLogin, (req, res) => {
     .exec((err, result) => {
       if (err) {
         return res.status(422).json({ message: `${err}` })
-      } else return res.status(200).json(result)
+      } else return res.status(200).json({ message: 'Commented!' })
     })
+})
+
+router.put('/:postId', requireLogin, (req, res) => {
+  Post.findByIdAndUpdate(
+    req.body.postId,
+    { $set: { caption: req.body.caption } },
+    { new: true }
+  ).exec((err, result) => {
+    if (err) {
+      return res.status(422).json({ message: `${err}` })
+    } else res.json({ message: 'Edited!' })
+  })
 })
 
 router.delete('/:postId', requireLogin, async (req, res) => {
