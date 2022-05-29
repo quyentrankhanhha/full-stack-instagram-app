@@ -14,6 +14,8 @@ const AuthProvider = ({ children }) => {
         setIsLoggedIn,
         user,
         setUser,
+        setToken,
+        token,
       }}
     >
       {children}

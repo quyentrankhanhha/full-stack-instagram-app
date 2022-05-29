@@ -4,7 +4,6 @@ import { createStackNavigator } from '@react-navigation/stack'
 import React, { useEffect } from 'react'
 import BottomTab from './components/BottomTab/BottomTab'
 import { useAuth } from './context/AuthProvider'
-import CommentScreen from './screens/CommentScreen'
 import HomeScreen from './screens/HomeScreen'
 import LoginScreen from './screens/LoginScreen'
 import NewPostScreen from './screens/NewPostScreen'
@@ -26,7 +25,6 @@ export const SignedInStack = () => {
         <Stack.Screen name='HomeScreen' component={HomeScreen} />
         <Stack.Screen name='LoginScreen' component={LoginScreen} />
         <Stack.Screen name='ProfileScreen' component={ProfileScreen} />
-        <Stack.Screen name='CommentScreen' component={CommentScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   )
@@ -48,12 +46,15 @@ export const SignedOutStack = () => {
 }
 
 export const MainNavigator = () => {
-  const { isLoggedIn, setIsLoggedIn } = useAuth()
+  const { isLoggedIn, setIsLoggedIn, setToken, setUser } = useAuth()
   const detectLogin = async () => {
     try {
-      const token = await AsyncStorage.getItem('token')
-      if (token) {
+      const localToken = await AsyncStorage.getItem('token')
+      const localUser = await AsyncStorage.getItem('user')
+      if (localToken && localUser) {
         setIsLoggedIn(true)
+        setToken(localToken)
+        setUser(JSON.parse(localUser))
       } else setIsLoggedIn(false)
     } catch (err) {
       console.log(err)

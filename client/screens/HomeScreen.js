@@ -1,33 +1,18 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useIsFocused } from '@react-navigation/native'
 import axios from 'axios'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { SafeAreaView, ScrollView, StyleSheet, Text } from 'react-native'
 import Header from '../components/Home/Header'
 import Post from '../components/Home/Post'
 import { PIC_URL } from '../constant/api'
+import { useAuth } from '../context/AuthProvider'
 import { usePosts } from '../context/PostProvider'
 
 const HomeScreen = ({ navigation }) => {
   const { postList, getPostList, setPostList } = usePosts()
+  console.log(postList)
   const isFocused = useIsFocused()
-  const [token, setToken] = useState('')
-
-  const getToken = async () => {
-    try {
-      const value = await AsyncStorage.getItem('token')
-
-      if (value !== null) {
-        setToken(value)
-      }
-    } catch (e) {
-      alert('Failed to fetch the input from storage')
-    }
-  }
-
-  useEffect(() => {
-    getToken()
-  }, [])
+  const { token } = useAuth()
 
   useEffect(() => {
     if (isFocused) {

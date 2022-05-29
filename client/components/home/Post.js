@@ -1,5 +1,5 @@
 import axios from 'axios'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Button,
   Image,
@@ -13,9 +13,12 @@ import {
 import { Divider } from 'react-native-elements'
 import { PIC_URL } from '../../constant/api'
 import { postFooterIcons } from '../../constant/postFooterIcons'
+import { useAuth } from '../../context/AuthProvider'
 import { base64ToDataUri } from '../../utils'
 
-const Post = ({ post, navigation, deletePost, token }) => {
+const Post = ({ post, deletePost, token }) => {
+  const { user } = useAuth()
+
   const [isEdited, setIsEdited] = useState(false)
   const [caption, setCaption] = useState(post.caption)
   const [comment, setComment] = useState('')
@@ -40,7 +43,6 @@ const Post = ({ post, navigation, deletePost, token }) => {
       })
       .then((res) => {
         toggleEdit()
-        console.log(res)
       })
       .catch((err) => console.log(err))
   }
@@ -57,16 +59,23 @@ const Post = ({ post, navigation, deletePost, token }) => {
         },
       })
       .then((res) => {
-        setComments(...comments, { text: comment, createdBy: post.createdBy })
+        setComments([...comments, { text: comment, createdBy: post.createdBy }])
         setComment('')
       })
       .catch((err) => console.log(err))
   }
 
+  useEffect(() => {}, [comment, comments])
+
   return (
     <View style={{ marginBottom: 30 }}>
       <Divider width={1} orientation='vertical' />
-      <PostHeader post={post} deletePost={deletePost} toggleEdit={toggleEdit} />
+      <PostHeader
+        post={post}
+        user={user}
+        deletePost={deletePost}
+        toggleEdit={toggleEdit}
+      />
       <PostImage post={post} />
       <View style={{ marginHorizontal: 15, marginTop: 10 }}>
         <PostFooter />
@@ -90,7 +99,7 @@ const Post = ({ post, navigation, deletePost, token }) => {
   )
 }
 
-const PostHeader = ({ post, deletePost, toggleEdit }) => (
+const PostHeader = ({ post, user, deletePost, toggleEdit }) => (
   <View
     style={{
       flexDirection: 'row',
@@ -105,24 +114,26 @@ const PostHeader = ({ post, deletePost, toggleEdit }) => (
         {post.createdBy.username}
       </Text>
     </View>
-    <View style={{ flexDirection: 'row' }}>
-      <TouchableOpacity onPress={toggleEdit}>
-        <Image
-          source={{
-            uri: 'https://img.icons8.com/external-flat-icons-inmotus-design/67/000000/external-dots-internet-messenger-flat-icons-inmotus-design.png',
-          }}
-          style={styles.icon}
-        />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => deletePost(post._id)}>
-        <Image
-          source={{
-            uri: 'https://img.icons8.com/material-outlined/24/000000/trash--v1.png',
-          }}
-          style={styles.icon}
-        />
-      </TouchableOpacity>
-    </View>
+    {user._id === post.createdBy._id && (
+      <View style={{ flexDirection: 'row' }}>
+        <TouchableOpacity onPress={toggleEdit}>
+          <Image
+            source={{
+              uri: 'https://img.icons8.com/external-flat-icons-inmotus-design/67/000000/external-dots-internet-messenger-flat-icons-inmotus-design.png',
+            }}
+            style={styles.icon}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => deletePost(post._id)}>
+          <Image
+            source={{
+              uri: 'https://img.icons8.com/material-outlined/24/000000/trash--v1.png',
+            }}
+            style={styles.icon}
+          />
+        </TouchableOpacity>
+      </View>
+    )}
   </View>
 )
 

@@ -37,10 +37,11 @@ const LoginForm = ({ navigation }) => {
       data: values,
     })
       .then(async (res) => {
-        setIsLoggedIn(true)
-        setUser(res.data.user)
         try {
           await AsyncStorage.setItem('token', res.data.token)
+          await AsyncStorage.setItem('user', JSON.stringify(res.data.user))
+
+          setIsLoggedIn(true)
         } catch (err) {
           Alert(err)
           alert(err)
