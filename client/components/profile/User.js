@@ -1,8 +1,18 @@
 import React from 'react'
 import { Image, StyleSheet, Text, View } from 'react-native'
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler'
+import { useAuth } from '../../context/AuthProvider'
+import { usePosts } from '../../context/PostProvider'
+import { base64ToDataUri } from '../../utils'
 
 const User = () => {
+  const { user } = useAuth()
+  const { postList } = usePosts()
+
+  const userPost = postList.posts.filter(
+    (post) => post.createdBy._id === user._id
+  )
+
   return (
     <ScrollView>
       <View style={styles.profileSectionWrapper}>
@@ -11,7 +21,7 @@ const User = () => {
             style={styles.avatar}
             source='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWNTphqAcgRRkbHdhcWofAsVBon_jYRBw_v9EKxjwprkdXkJ62I6lcSiB6JgUEPl4kDeo&usqp=CAU'
           />
-          <Text style={styles.name}>Name</Text>
+          <Text style={styles.name}>{user.username}</Text>
         </View>
 
         <View style={styles.infoUser}>
@@ -41,28 +51,13 @@ const User = () => {
       </View>
 
       <View style={styles.imgWrapper}>
-        <Image
-          style={styles.galleryImg}
-          source='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWNTphqAcgRRkbHdhcWofAsVBon_jYRBw_v9EKxjwprkdXkJ62I6lcSiB6JgUEPl4kDeo&usqp=CAU'
-        />
-        <Image
-          style={styles.galleryImg}
-          source='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWNTphqAcgRRkbHdhcWofAsVBon_jYRBw_v9EKxjwprkdXkJ62I6lcSiB6JgUEPl4kDeo&usqp=CAU'
-        />
-      </View>
-      <View style={styles.imgWrapper}>
-        <Image
-          style={styles.galleryImg}
-          source='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWNTphqAcgRRkbHdhcWofAsVBon_jYRBw_v9EKxjwprkdXkJ62I6lcSiB6JgUEPl4kDeo&usqp=CAU'
-        />
-        <Image
-          style={styles.galleryImg}
-          source='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWNTphqAcgRRkbHdhcWofAsVBon_jYRBw_v9EKxjwprkdXkJ62I6lcSiB6JgUEPl4kDeo&usqp=CAU'
-        />
-        <Image
-          style={styles.galleryImg}
-          source='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWNTphqAcgRRkbHdhcWofAsVBon_jYRBw_v9EKxjwprkdXkJ62I6lcSiB6JgUEPl4kDeo&usqp=CAU'
-        />
+        {userPost.map((post, index) => (
+          <Image
+            key={index}
+            style={styles.galleryImg}
+            source={{ uri: base64ToDataUri(post?.photo) }}
+          />
+        ))}
       </View>
     </ScrollView>
   )

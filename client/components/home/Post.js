@@ -109,7 +109,10 @@ const PostHeader = ({ post, user, deletePost, toggleEdit }) => (
     }}
   >
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <Image source={{ uri: post.userImg }} style={styles.story} />
+      <Image
+        source='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWNTphqAcgRRkbHdhcWofAsVBon_jYRBw_v9EKxjwprkdXkJ62I6lcSiB6JgUEPl4kDeo&usqp=CAU'
+        style={styles.story}
+      />
       <Text style={{ marginLeft: 5, fontWeight: '700' }}>
         {post.createdBy.username}
       </Text>

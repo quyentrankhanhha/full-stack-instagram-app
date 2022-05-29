@@ -18,10 +18,10 @@ router.post('/login', async (req, res) => {
       return res.status(401).send({ message: 'Invalid Password' })
 
     const token = user.generateAuthToken()
-    const { _id, name, email, pic, username } = user
-    return res.status(201).send({
+    const { _id, email, pic, username } = user
+    return res.status(200).send({
       token: token,
-      user: { _id, name, email, pic, username },
+      user: { _id, email, pic, username },
       message: 'Logged in successfully!',
     })
   } catch (err) {

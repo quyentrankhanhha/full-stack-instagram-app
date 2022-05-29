@@ -10,7 +10,6 @@ import { usePosts } from '../context/PostProvider'
 
 const HomeScreen = ({ navigation }) => {
   const { postList, getPostList, setPostList } = usePosts()
-  console.log(postList)
   const isFocused = useIsFocused()
   const { token } = useAuth()
 
