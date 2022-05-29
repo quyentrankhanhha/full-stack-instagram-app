@@ -2,8 +2,8 @@ import React from 'react'
 import { StyleSheet } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import ProfileHeader from '../components/Profile/ProfileHeader'
-import User from '../components/Profile/User'
+import ProfileHeader from '../components/profile/ProfileHeader'
+import User from '../components/profile/User'
 
 const ProfileScreen = ({ navigation }) => {
   return (

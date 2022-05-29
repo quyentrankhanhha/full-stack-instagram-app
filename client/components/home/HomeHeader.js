@@ -3,7 +3,7 @@ import React from 'react'
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { useAuth } from '../../context/AuthProvider'
 
-const Header = ({ navigation }) => {
+const HomeHeader = ({ navigation }) => {
   const { setIsLoggedIn } = useAuth()
 
   return (
@@ -103,4 +103,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default Header
+export default HomeHeader

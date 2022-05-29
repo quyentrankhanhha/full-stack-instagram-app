@@ -65,7 +65,6 @@ const PostUploader = ({ navigation }) => {
         },
       })
       .then((res) => {
-        console.log(res)
         // Alert.alert('You have shared successfully!', [{ text: 'OK' }])
       })
       .catch((err) => {
@@ -112,6 +111,7 @@ const PostUploader = ({ navigation }) => {
                   uri: image.uri,
                 }}
                 style={{ width: 100, height: 100 }}
+                asdfsadf
               />
             ) : (
               <Button

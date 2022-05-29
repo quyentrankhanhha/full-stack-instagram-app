@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import {
   Button,
   Image,
-  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -110,7 +109,9 @@ const PostHeader = ({ post, user, deletePost, toggleEdit }) => (
   >
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
       <Image
-        source='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWNTphqAcgRRkbHdhcWofAsVBon_jYRBw_v9EKxjwprkdXkJ62I6lcSiB6JgUEPl4kDeo&usqp=CAU'
+        source={{
+          uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWNTphqAcgRRkbHdhcWofAsVBon_jYRBw_v9EKxjwprkdXkJ62I6lcSiB6JgUEPl4kDeo&usqp=CAU',
+        }}
         style={styles.story}
       />
       <Text style={{ marginLeft: 5, fontWeight: '700' }}>
@@ -216,7 +217,7 @@ const Caption = ({
           }}
         >
           <TextInput
-            style={{ paddingBottom: 10, width: '100%' }}
+            style={{ paddingBottom: 10, width: '90%' }}
             value={caption}
             onChangeText={captionOnChange}
             multiline
@@ -256,7 +257,7 @@ const Comments = ({ post }) => (
       <View key={index} style={{ flexDirection: 'row', marginTop: 3 }}>
         <Text>
           <Text style={{ fontWeight: '600' }}>
-            {comment.createdBy.username}
+            {comment?.createdBy?.username || 'Unknown'}
           </Text>{' '}
           {comment.text}
         </Text>
@@ -276,9 +277,7 @@ const PostComment = ({ comment, commentOnChange, handleAddComment }) => (
       maxLength={10}
       style={styles.addCaptionInput}
     />
-    <Pressable title='Post' onPress={handleAddComment} disabled={!comment}>
-      <Text>Post</Text>
-    </Pressable>
+    <Button title='Post' onPress={handleAddComment} disabled={!comment} />
   </View>
 )
 
@@ -306,7 +305,7 @@ const styles = StyleSheet.create({
   },
 
   addCaptionInput: {
-    width: '100%',
+    width: '90%',
     paddingBottom: 10,
   },
 

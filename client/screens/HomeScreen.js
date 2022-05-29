@@ -2,8 +2,8 @@ import { useIsFocused } from '@react-navigation/native'
 import axios from 'axios'
 import React, { useEffect } from 'react'
 import { SafeAreaView, ScrollView, StyleSheet, Text } from 'react-native'
-import Header from '../components/Home/Header'
-import Post from '../components/Home/Post'
+import HomeHeader from '../components/home/HomeHeader'
+import Post from '../components/home/Post'
 import { PIC_URL } from '../constant/api'
 import { useAuth } from '../context/AuthProvider'
 import { usePosts } from '../context/PostProvider'
@@ -37,7 +37,7 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header navigation={navigation} />
+      <HomeHeader navigation={navigation} />
       <ScrollView>
         {!postList?.posts?.length && (
           <Text style={styles.text}>Nothing here!</Text>

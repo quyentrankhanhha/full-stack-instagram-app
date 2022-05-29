@@ -1,6 +1,6 @@
 import React from 'react'
 import { Image, StyleSheet, View } from 'react-native'
-import RegisterForm from '../components/Register/RegisterForm'
+import RegisterForm from '../components/register/RegisterForm'
 
 const RegisterScreen = ({ navigation }) => {
   return (
